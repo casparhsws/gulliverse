@@ -43,27 +43,71 @@
   </head>
   <body>
     <div id="deck-container">
+      
+<div id="map"></div>
+<div id="menu">
+    <input
+        id="streets-v11"
+        type="radio"
+        name="rtoggle"
+        value="streets"
+        checked="checked"
+    />
+    <label for="mapbox/streets-v11">streets</label>
+    <input id="mapbox/light-v10" type="radio" name="rtoggle" value="light" />
+    <label for="mapbox/light-v10">light</label>
+    <input id="mapbox/dark-v10" type="radio" name="rtoggle" value="dark" />
+    <label for="mapbox/dark-v10">dark</label>
+    <input id="mapbox/outdoors-v11" type="radio" name="rtoggle" value="outdoors" />
+    <label for="mapbox/outdoors-v11">outdoors</label>
+    <input id="mapbox/satellite-v9" type="radio" name="rtoggle" value="satellite" />
+    <label for="mapbox/satellite-v9">satellite</label>
+    <input id="caspar-maps/ckb6rpncw3rfh1jnrjhdhht4w" type="radio" name="rtoggle" value="mineral" />
+    <label for="caspar-maps/ckb6rpncw3rfh1jnrjhdhht4w">mineral</label>
+</div>
+
     </div>
   </body>
   <script>
-
+const {DeckGL, ScatterplotLayer} = deck;
 const GULLS =
-  'https://cors-anywhere.herokuapp.com/https://github.com/casparhsws/gulliverse/blob/master/data/gull_no_alt.geojson'; //eslint-disable-line
-  
-  
-  new deck.DeckGL({
+  'https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/casparhsws/gulliverse/master/data/gull.json'; //eslint-disable-line
+
+const mineral = 'mapbox://styles/caspar-maps/ckb6rpncw3rfh1jnrjhdhht4w'
+const satellite = 'mapbox://styles/mapbox/satellite-v9'
+
+
+var layerList = document.getElementById('menu');
+var inputs = layerList.getElementsByTagName('input');
+
+function switchLayer(layer) {
+    var layerId = layer.target.id;
+    map.setStyle('mapbox://styles/' + layerId);
+}
+
+for (var i = 0; i < inputs.length; i++) {
+    inputs[i].onclick = switchLayer;
+}
+
+  const deckgl = new deck.DeckGL({
     mapboxApiAccessToken: 'pk.eyJ1IjoiY2FzcGFyLW1hcHMiLCJhIjoiY2tiYXczMGdhMHM5NDJxbzhtM2hiMThnaiJ9.blmT-Kxtk3tDYQY0CYDimw',
-    mapStyle: 'mapbox://styles/caspar-maps/ckb6rpncw3rfh1jnrjhdhht4w',
+    mapStyle: mineral,
     initialViewState: {
-      longitude: -2,
-      latitude: 54,
+      longitude: -2.601793,
+      latitude: 51.459365,
       zoom: 15
     },
     controller: true,
 
     layers: [
-      new deck.ScatterplotLayer({
-        data: GULLS
+      new ScatterplotLayer({
+        data: GULLS,
+              // Styles
+	  getPosition: d =>  [d.geometry.coordinates[1], d.geometry.coordinates[0]],
+	  radiusScale: 10,
+	  radiusMinPixels: 0.5,
+      opacity: 1,
+      getColor: [0, 255, 255]
       })
     ]
   });
