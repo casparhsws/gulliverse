@@ -103,7 +103,7 @@ for (var i = 0; i < inputs.length; i++) {
       new ScatterplotLayer({
         data: GULLS,
               // Styles
-	  getPosition: d =>  [d.geometry.coordinates[1], d.geometry.coordinates[0]],
+	  getPosition: d =>  [d.longitude, d.latitude],
 	  radiusScale: 10,
 	  radiusMinPixels: 0.5,
       opacity: 1,
