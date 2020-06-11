@@ -45,11 +45,12 @@
     <div id="deck-container">
     </div>
   </body>
-  <script type="text/javascript" src="load.js"></script>
   <script>
 
 const GULLS =
-  '/d/repos/you-go-gull/gull.geojson'; //eslint-disable-line
+  'https://cors-anywhere.herokuapp.com/https://github.com/casparhsws/gulliverse/blob/master/data/gull.geojson'; //eslint-disable-line
+  
+  
   new deck.DeckGL({
     mapboxApiAccessToken: 'pk.eyJ1IjoiY2FzcGFyLW1hcHMiLCJhIjoiY2tiYXczMGdhMHM5NDJxbzhtM2hiMThnaiJ9.blmT-Kxtk3tDYQY0CYDimw',
     mapStyle: 'mapbox://styles/caspar-maps/ckb6rpncw3rfh1jnrjhdhht4w',
