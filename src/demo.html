@@ -1,0 +1,71 @@
+<html>
+  <head>
+    <script src="https://unpkg.com/deck.gl@latest/dist.min.js"></script>
+    <!-- optional if mapbox base map is needed -->
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    #deck-map-container {
+      width: 100%;
+      height: 100%;
+      background-color: black;
+    }
+
+    #map {
+      pointer-events: none;
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      z-index: 1;
+    }
+
+    #deckgl-overlay {
+      z-index: 2;
+      background: none;
+    }
+
+    #deck-map-wrapper {
+      width: 100%;
+      height: 100%;
+    }
+
+    #deck-container {
+      width: 100vw;
+      height: 100vh;
+    }
+    </style>
+  </head>
+  <body>
+    <div id="deck-container">
+    </div>
+  </body>
+  <script type="text/javascript" src="load.js"></script>
+  <script>
+
+const GULLS =
+  '/d/repos/you-go-gull/gull.geojson'; //eslint-disable-line
+  new deck.DeckGL({
+    mapboxApiAccessToken: 'pk.eyJ1IjoiY2FzcGFyLW1hcHMiLCJhIjoiY2tiYXczMGdhMHM5NDJxbzhtM2hiMThnaiJ9.blmT-Kxtk3tDYQY0CYDimw',
+    mapStyle: 'mapbox://styles/caspar-maps/ckb6rpncw3rfh1jnrjhdhht4w',
+    initialViewState: {
+      longitude: -2,
+      latitude: 54,
+      zoom: 15
+    },
+    controller: true,
+
+    layers: [
+      new deck.ScatterplotLayer({
+        data: GULLS
+      })
+    ]
+  });
+
+  </script>
+</html>
