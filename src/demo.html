@@ -45,72 +45,93 @@
     <div id="deck-container">
       
 <div id="map"></div>
-<div id="menu">
-    <input
-        id="streets-v11"
-        type="radio"
-        name="rtoggle"
-        value="streets"
-        checked="checked"
-    />
-    <label for="mapbox/streets-v11">streets</label>
-    <input id="mapbox/light-v10" type="radio" name="rtoggle" value="light" />
-    <label for="mapbox/light-v10">light</label>
-    <input id="mapbox/dark-v10" type="radio" name="rtoggle" value="dark" />
-    <label for="mapbox/dark-v10">dark</label>
-    <input id="mapbox/outdoors-v11" type="radio" name="rtoggle" value="outdoors" />
-    <label for="mapbox/outdoors-v11">outdoors</label>
-    <input id="mapbox/satellite-v9" type="radio" name="rtoggle" value="satellite" />
-    <label for="mapbox/satellite-v9">satellite</label>
-    <input id="caspar-maps/ckb6rpncw3rfh1jnrjhdhht4w" type="radio" name="rtoggle" value="mineral" />
-    <label for="caspar-maps/ckb6rpncw3rfh1jnrjhdhht4w">mineral</label>
-</div>
+<div id="tooltip" style="position: absolute; z-index: 1; pointer-events: none;"></div>
 
     </div>
   </body>
   <script>
-const {DeckGL, ScatterplotLayer} = deck;
+const {DeckGL, ScatterplotLayer, PointCloudLayer, LineLayer} = deck;
 const GULLS =
-  'https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/casparhsws/gulliverse/master/data/gull.json'; //eslint-disable-line
+  'http://localhost:8003/gull.json'; //eslint-disable-line
 
 const mineral = 'mapbox://styles/caspar-maps/ckb6rpncw3rfh1jnrjhdhht4w'
 const satellite = 'mapbox://styles/mapbox/satellite-v9'
 
+const birdIDs = [5308, 5309, 5476, 5478, 5479, 5481, 5482, 5485]
 
-var layerList = document.getElementById('menu');
-var inputs = layerList.getElementsByTagName('input');
-
-function switchLayer(layer) {
-    var layerId = layer.target.id;
-    map.setStyle('mapbox://styles/' + layerId);
-}
-
-for (var i = 0; i < inputs.length; i++) {
-    inputs[i].onclick = switchLayer;
-}
+function get_colour( d ) {
+        if( d === 5308 ) {
+            return [0,255,255]
+        } else if ( d === 5309) {
+            return [85,255,127]
+        } else if ( d === 5476) {
+            return [176, 0, 255]
+		} else if ( d === 5478) {
+			return [248, 0, 237]
+		} else if ( d === 5479) {
+			return [235, 255, 0]
+		} else if ( d === 5481) {
+			return [85, 255, 0]
+		} else if ( d === 5482) {
+			return [157, 114, 255]
+		} else if ( d === 5485) {
+			return [255, 179, 253]
+        } else {
+            return [0, 0, 0]
+        }
+    }
+	
 
   const deckgl = new deck.DeckGL({
     mapboxApiAccessToken: 'pk.eyJ1IjoiY2FzcGFyLW1hcHMiLCJhIjoiY2tiYXczMGdhMHM5NDJxbzhtM2hiMThnaiJ9.blmT-Kxtk3tDYQY0CYDimw',
     mapStyle: mineral,
     initialViewState: {
-      longitude: -2.601793,
-      latitude: 51.459365,
+      longitude: -2.611813,
+      latitude: 51.460551, 
       zoom: 15
     },
     controller: true,
 
     layers: [
-      new ScatterplotLayer({
+      new PointCloudLayer({
         data: GULLS,
               // Styles
-	  getPosition: d =>  [d.longitude, d.latitude],
+	  getPosition: d =>  [d.longitude, d.latitude, d.altitude_agl],
+	  pickable: true,
 	  radiusScale: 10,
-	  radiusMinPixels: 0.5,
+	  pointSize: 7,
       opacity: 1,
-      getColor: [0, 255, 255]
-      })
+      getColor: d => get_colour( d.birdID ),
+      // Enable picking
+      pickable: true,
+      // Update tooltip
+		onHover: info => setTooltip(info.object, info.x, info.y)
+    }),
+        new LineLayer({
+          id: 'line',
+          data: GULLS,
+          opacity: 0.1,
+          pickable: true,
+          getSourcePosition: d => [d.longitude, d.latitude, d.altitude_agl],
+          getTargetPosition: d => [d.longitude, d.latitude, 0],
+          getColor: d => get_colour( d.birdID ),
+          getWidth: 8
+        })
     ]
   });
+
+function setTooltip(object, x, y) {
+  const el = document.getElementById('tooltip');
+  if (object) {
+    el.innerHTML = object.altitude;
+    el.style.display = 'block';
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+  } else {
+    el.style.display = 'none';
+  }
+};
+
 
   </script>
 </html>
